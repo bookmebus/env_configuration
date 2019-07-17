@@ -1,0 +1,29 @@
+default: &default
+  APP_NAME: "BookMeBus"
+  COMPANY_NAME: "Camtasia Technology"
+  APP_VERSION: "Development"
+  ENABLE_HTTPS: 'no'
+
+  ASSET_HOST_URL: 'http://localhost:3000'
+  HOST: 'http://localhost:3000'
+
+test:
+  <<: *default
+
+development:
+  <<: *default
+  APP_NAME: 'BookMeBus Dev'
+  COMPANY_NAME: 'Camtasia Technology Dev'
+  APP_VERSION: '1.0.0-dev'
+  ENABLE_HTTPS: 'no'
+  ASSET_HOST_URL: 'http://dev.local'
+  HOST: 'http://dev.local'
+
+staging:
+  <<: *default
+
+production:
+  <<: *default
+
+
+
