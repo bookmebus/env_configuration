@@ -8,8 +8,12 @@ module EnvConfiguration
         super(options)
       end
 
+      def file
+        @options[:dot_env_file] || EnvConfiguration.configuration.dot_env_file
+      end
+
       def load
-        file = @options[:env_file]
+        p file
         if file.nil?
           Dotenv.load
         else

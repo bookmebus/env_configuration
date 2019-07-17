@@ -4,16 +4,34 @@ module EnvConfiguration
 
       def initialize(options={})
         super(options)
-        raise ":path options is required for example /staging" if options[:path].nil?
-        @path = @options.delete(:path)
+        
       end
 
       def client
+        aws_options = {
+          access_key_id: access_key_id,
+          secret_access_key: secret_access_key,
+          region: region,
+        }
         @client ||= Aws::SSM::Client.new(@options)
       end
 
+      def access_key_id
+        @options[:access_key_id] || EnvConfiguration.configuration.aws_access_key_id
+      end
+
+      def secret_access_key
+        @options[:secret_access_key] || EnvConfiguration.configuration.aws_secret_access_key
+      end
+
+      def region
+        @options[:region] || EnvConfiguration.configuration.aws_region
+      end
+
       def path
-        @path
+        path_value = @options[:path] || EnvConfiguration.configuration.aws_path
+        raise ":path options is required for example /staging" if path_value.nil?
+        path_value
       end
 
       def load

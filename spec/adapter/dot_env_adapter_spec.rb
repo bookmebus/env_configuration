@@ -4,8 +4,43 @@ require "env_configuration/adapter/base"
 require "env_configuration/adapter/dot_env_adapter"
 
 RSpec.describe EnvConfiguration::Adapter::DotEnvAdapter do
+
+  let!(:dot_env_file) { File.expand_path('../../config/default-app.env', __FILE__)}
+  let!(:configuration) do
+    EnvConfiguration.configure do |config|
+      config.dot_env = { dot_env_file:  dot_env_file}
+    end
+  end
+
+  describe '#file' do
+    context 'dot_env_file set' do
+      it 'return from option if it set' do
+        adapter = EnvConfiguration::Adapter::DotEnvAdapter.new(dot_env_file: 'config/app.env')
+        expect(adapter.file).to eq 'config/app.env'
+      end
+
+      it 'return from config if options not set' do
+        adapter = EnvConfiguration::Adapter::DotEnvAdapter.new
+        expect(adapter.file).to eq dot_env_file
+      end
+    end
+
+    context 'not set' do
+      it 'return nil' do
+        configuration.dot_env = nil
+        adapter = EnvConfiguration::Adapter::DotEnvAdapter.new
+        expect(adapter.file).to eq nil
+
+      end
+    end
+
+  end
+
+
   describe "#load" do
     it "load from .env to environment if not file specified" do
+
+      configuration.dot_env = nil
       result = EnvConfiguration::Configurator.load(:dot_env)
       
       expect_result = { "APP_NAME"=>"BookMeBus DotRoot", "COMPANY_NAME"=>"Camtasia Technology DotRoot", 
@@ -17,9 +52,9 @@ RSpec.describe EnvConfiguration::Adapter::DotEnvAdapter do
       expect(result).to match expect_result
     end
 
-    it "load from env_file to environment if no file specifed" do
+    it "load from dot_env_file to environment if no file specifed" do
       options = {
-        env_file: File.expand_path('../../config/.env', __FILE__)
+        dot_env_file: File.expand_path('../../config/default-app.env', __FILE__)
       }
       result = EnvConfiguration::Configurator.load(:dot_env, options)
       

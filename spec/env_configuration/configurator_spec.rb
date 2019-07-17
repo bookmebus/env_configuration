@@ -5,6 +5,10 @@ require "env_configuration/adapter/base"
 require "env_configuration/adapter/dot_env_adapter"
 
 RSpec.describe EnvConfiguration::Configurator do
+  before(:each) do
+    EnvConfiguration.reset_configuration
+  end
+
   describe '.load' do
     it 'build and load config from adapter_name if adapter_name is an atom' do
       result = EnvConfiguration::Configurator.load(:dot_env)
@@ -46,7 +50,7 @@ RSpec.describe EnvConfiguration::Configurator do
     end
 
     it 'return EnvConfiguration::Adapter::AwsSsmParameterStoreAdapter objecct if name is :aws_ssm_parameter_store' do
-      adapter = EnvConfiguration::Configurator.adapter(:aws_ssm_parameter_store)
+      adapter = EnvConfiguration::Configurator.adapter(:aws_ssm_parameter_store, path: '/')
       expect(adapter.class).to eq EnvConfiguration::Adapter::AwsSsmParameterStoreAdapter
     end
 
