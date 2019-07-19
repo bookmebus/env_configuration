@@ -35,9 +35,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "byebug"
-
-  spec.add_dependency "aws-sdk-core"
+  
   spec.add_dependency "aws-sdk-ssm"
   spec.add_dependency "dotenv-rails", "2.7.4"
 end
