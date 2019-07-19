@@ -9,19 +9,25 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Channa Ly"]
   spec.email         = ["channa.info@gmail.com"]
 
-  spec.summary       = %q{Write a short summary, because RubyGems requires one.}
-  spec.description   = %q{Write a longer description or delete this line.}
-  spec.homepage      = "https://github.com"
+  spec.summary       = %q{
+    A gem to config env variable in development in dotenv, yaml, aws ssm parameter store, heroku in ruby and rails project.
+  }
+  spec.description   = %q{
+    This gem aims to load config to ENV varaible easily. Currently configuration can be done by a .env, a yaml file or by loading from 
+    AWS System Manager Parameter Store which is recommended for production deployment.
+
+  }
+  spec.homepage      = "https://github.com/channainfo/env_configuration"
   spec.license       = "MIT"
 
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "http://mygemserver.com"
-  else
-    raise "RubyGems 2.0 or newer is required to protect against " \
-      "public gem pushes."
-  end
+  # # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
+  # # to allow pushing to a single host or delete this section to allow pushing to any host.
+  # if spec.respond_to?(:metadata)
+  #   spec.metadata["allowed_push_host"] = "http://mygemserver.com"
+  # else
+  #   raise "RubyGems 2.0 or newer is required to protect against " \
+  #     "public gem pushes."
+  # end
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -35,7 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  
+
   spec.add_dependency "aws-sdk-ssm"
   spec.add_dependency "dotenv-rails", "2.7.4"
 end
