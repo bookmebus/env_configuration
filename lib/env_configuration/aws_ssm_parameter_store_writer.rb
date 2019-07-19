@@ -2,13 +2,24 @@ module EnvConfiguration
   class AwsSsmParameterStoreWriter
     attr_accessor :env_name #allow to reset env but not region
 
-    def initialize(env_name: 'staging', region: 'ap-southeast-1')
+    def initialize(env_name, options = {})
       @env_name = env_name
-      @region   = region
+      @options  = options
     end
 
     def client
-      AwsSsmClient.instance
+      @client ||= Aws::SSM::Client.new(@options)
+    end
+
+    def put_configs_from_yaml_file(config_yml)
+      configs = YAML.load_file(config_yml)[@env_name]
+      put_configs(configs)
+    end
+
+    def put_configs(configs)
+      configs.each do |key, value|
+        put_config(key, value)
+      end
     end
 
     def put_config(name, value, type='String')
@@ -27,14 +38,6 @@ module EnvConfiguration
 
       Rails.logger.info { "setting: #{options}" }
       response
-    end
-
-    def put_configs_from_yaml_file(config_yml)
-      configs = YAML.load_file(config_yml)[@env_name]
-
-      configs.each do |key, value|
-        put_config(key, value)
-      end
     end
   end
 end
