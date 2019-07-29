@@ -10,24 +10,28 @@ Gem::Specification.new do |spec|
   spec.email         = ["channa.info@gmail.com"]
 
   spec.summary       = %q{
-    A gem to config env variable in development in dotenv, yaml, aws ssm parameter store, heroku in ruby and rails project.
-  }
+    This gem aims to load your configuration into environment variable that can be accessed via ENV variable in ruby.
+    Currently configuration can be done via 3 different adapters}
   spec.description   = %q{
-    This gem aims to load config to ENV varaible easily. Currently configuration can be done by a .env, a yaml file or by loading from 
-    AWS System Manager Parameter Store which is recommended for production deployment.
+This gem aims to load your configuration into environment variable that can be accessed via ENV variable in ruby.
+Currently configuration can be done via 3 different adapters
+    1 - Using .env powered by dotenv gem. This is very popular in development environment.
+    2 - Using Yaml file config. As Yaml can be nested it is a bit more convenient than dotenv to separate setting between environment.
+    3 - Using AWS System Manager Parameter Store this is recommended for production. This gem does not support encrypted parameters. But it is simple to do it PR is welcome too.
 
+How about container service like Heroku and ElasticBeanstalk? Heroku has application setting page with configurations for your ENV with a limitation of 32kb max in size. ElasticBeanstalk has a similar approach by allowing you to set configuration variable in the ElasticBeanstalk setting page, however it allows only 4096 bytes max for key & value combined. This might cause issues for some application. If your application configurations have key & value combined exceed 4096 bytes., Aws system parameter store can be one of the solution to overcome the limitation in ElasticBeanstalk.
   }
-  spec.homepage      = "https://github.com/channainfo/env_configuration"
+  spec.homepage      = "https://github.com"
   spec.license       = "MIT"
 
-  # # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # # to allow pushing to a single host or delete this section to allow pushing to any host.
-  # if spec.respond_to?(:metadata)
-  #   spec.metadata["allowed_push_host"] = "http://mygemserver.com"
-  # else
-  #   raise "RubyGems 2.0 or newer is required to protect against " \
-  #     "public gem pushes."
-  # end
+  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
+  # to allow pushing to a single host or delete this section to allow pushing to any host.
+  if spec.respond_to?(:metadata)
+    spec.metadata["allowed_push_host"] = "http://mygemserver.com"
+  else
+    raise "RubyGems 2.0 or newer is required to protect against " \
+      "public gem pushes."
+  end
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -41,7 +45,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "byebug"
 
+  spec.add_dependency "aws-sdk-core"
   spec.add_dependency "aws-sdk-ssm"
   spec.add_dependency "dotenv-rails", "2.7.4"
 end
