@@ -1,16 +1,17 @@
+
 # EnvConfiguration
 
 [![Build Status](https://travis-ci.org/channainfo/env_configuration.svg?branch=develop)](https://travis-ci.org/channainfo/env_configuration)
 
-This gem aims to load your config into ENV.  Currently configuration can be done via 3 different adapters
+This gem aims to load your configuration into environment variable that can be accessed via ENV variable in ruby. Currently configuration can be done via 3 different adapters
 
  1. Using .env powered by [dotenv](https://github.com/bkeepers/dotenv) gem. This is very popular in development environment.
  2. Using Yaml file config. As Yaml can be nested it is a bit more convenient than dotenv to separate setting between environment.
- 3. Using [AWS System Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) - recommended for production.
+ 3. Using [AWS System Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)  this is recommended for production. This gem does not support encrypted parameters. But it is simple to do it PR is welcome too.
 
-How about container service link [Heroku](https://heroku.com/) and [ElasticBeanstalk](https://aws.amazon.com/elasticbeanstalk/)?
+How about container service like [Heroku](https://heroku.com/) and [ElasticBeanstalk](https://aws.amazon.com/elasticbeanstalk/)?
 
-Heroku has an application settings for ENV which allows the config var to have up to 32kb max in size. ElasticBeanstalk has a similar approach by allowing you to set config var in the ElasticBeanstalk Settings, however[it allows only 4096bytes max for key, value combined](https://stackoverflow.com/questions/54344236/environmentvariables-default-value-length-is-greater-than-4096). This might cause issues for some application that integrate with many third parties.
+Heroku has application setting page with configurations for your ENV with a limitation of 32kb max in size. ElasticBeanstalk has a similar approach by allowing you to set configuration variable in the ElasticBeanstalk setting page, however [it allows only 4096 bytes max for key & value combined](https://stackoverflow.com/questions/54344236/environmentvariables-default-value-length-is-greater-than-4096). This might cause issues for some application. If your application configurations have key & value combined exceed 4096 bytes., Aws system parameter store can be one of the solution to overcome the limitation in ElasticBeanstalk.
 
 
 
@@ -25,7 +26,7 @@ An app’s  _config_  is everything that is likely to vary between  [deploys](ht
 Apps sometimes store config as constants in the code. This is a violation of twelve-factor, which requires  **strict separation of config from code**. Config varies substantially across deploys, code does not.
 
 A litmus test for whether an app has all config correctly factored out of the code is whether the codebase could be made open source at any moment, without compromising any credentials.
-  
+
 ## Installation
 ```ruby
 gem 'env_configuration'
@@ -37,15 +38,15 @@ And then execute:
 ```bash  
 $ bundle
 ```
-  
+
 
 Or install it yourself as:
 
-  
+
 ```bash
 $ gem install env_configuration
 ```
-  
+
 
 ## Usage
 There are 3 types of adapter :dot_env,  :yaml,  :aws_ssm_parameter_store.
@@ -59,7 +60,7 @@ You can configure the gem with the following:
 ```ruby
 EnvConfiguration.configure do |config|
   config.dot_env = { dot_env_file:  'config/app.env' }
-  config.yaml    = { yaml_file:  'config/app.yaml'}
+  config.yaml    = { yaml_file:  'config/app.yaml', section: 'development'}
   config.aws_ssm_parameter_store  = { access_key_id:  'aws-key', secret_access_key:  'aws-secret', region:  'ap-southeast-1', path:  '/staging'}
 end
 ```
@@ -87,7 +88,7 @@ Internally EnvConfiguration use 'yaml' library from ruby to handle this.
 #end
 
 # optional if you configure the gem above.
-options  = { yaml_file: 'config/app.yaml', __FILE__), section:  'development' }
+options  = { yaml_file: 'config/app.yaml', __FILE__), section: 'development' }
 result  =  EnvConfiguration::Configurator.load(:yaml, options)
 ```
 Both :yaml_file and :section must exist . If you options is being specified EnvConfiguration will take value from options. otherwise gem configuration must provide the values.
@@ -146,7 +147,7 @@ EnvConfiguration gem will hand over the options to aws-sdk-ssm. Interesting aws-
  - ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']
  - ~/.aws/credentials
  - ~/.aws/config
- 
+
 ### The Region
 The region is search for in the following locations:
   - :region
@@ -186,7 +187,7 @@ Add the following line
 ```ruby
 EnvConfiguration::Configurator.load(:dot_env)
 ```
-right below the 
+right below the
 ```ruby
 Bundler.require(*Rails.groups)
 ```
@@ -216,7 +217,7 @@ Bundler.require(*Rails.groups)
 if(Rails.env.development?)
   EnvConfiguration::Configurator.load(:dot_env)
 elsif Rails.env.test?
-  EnvConfiguration::Configurator.load(:yaml, yaml_file: "#{Rails.root}/config/app-test.yml")
+  EnvConfiguration::Configurator.load(:yaml, yaml_file: "#{Rails.root}/config/app-test.yml", section: Rails.env)
 else
   #separete aws ssm parameter store from staging with production /Rails.env
   EnvConfiguration::Configurator.load(:aws_ssm_parameter_store, path: "/#{Rails.env}")
@@ -230,7 +231,7 @@ EnvConfiguration.configure do |config|
   # Dot Env
   config.dot_env = { dot_env_file: 'config/app.env' }
   # Yaml Config
-  config.yaml = { yaml_file: File.join(Rails.root, "config/application_#{Rails.env}.yaml" )}
+  config.yaml = { yaml_file: File.join(Rails.root, "config/application_#{Rails.env}.yaml", section: Rails.env )}
 
   # Aws ssm parameter store
   config.aws_ssm_parameter_store = { access_key_id: ENV['AWS_ACCESS_KEY_ID'],
@@ -242,27 +243,12 @@ end
 ```
 
 
-
-
-
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
- 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-  
-
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/channainfo/env_configuration. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at [https://github.com/bookmebus/env_configuration](https://github.com/bookmebus/env_configuration). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-  
+
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
- 
