@@ -2,9 +2,12 @@ module EnvConfiguration
   module Adapter
     class AwsSsmParameterStoreAdapter < Base
 
+      # if you set ENV['AWS_ACCESS_KEY_ID'],ENV['AWS_SECRET_ACCESS_KEY'], ENV['AWS_REGION']
+      # you don't need to pass the options
+      # { access_key_id: ENV['AWS_ACCESS_KEY_ID'], secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'], region: ENV['AWS_REGION']
       def initialize(options={})
         super(options)
-        
+
       end
 
       def client

@@ -1,7 +1,12 @@
+require 'aws-sdk-ssm'
+
 module EnvConfiguration
   class AwsSsmParameterStoreWriter
     attr_accessor :env_name #allow to reset env but not region
 
+    # if you set ENV['AWS_ACCESS_KEY_ID'],ENV['AWS_SECRET_ACCESS_KEY'], ENV['AWS_REGION']
+    # you don't need to pass the options
+    # { access_key_id: ENV['AWS_ACCESS_KEY_ID'], secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'], region: ENV['AWS_REGION']
     def initialize(env_name, options = {})
       @env_name = env_name
       @options  = options
@@ -18,7 +23,7 @@ module EnvConfiguration
 
     def put_configs(configs)
       configs.each do |key, value|
-        put_config(key, value)
+        put_config(key, value) if !value.empty? #aws don't allow value to have empty value
       end
     end
 
